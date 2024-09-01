@@ -28,44 +28,38 @@ key
   .action(keyManager.deleteKey);
 
 // POOL MANAGEMENT
-const pool = program.command('pool').description('Manage Uniswap v3 pools');
+const pool = program.command('pool').description('Manage Panoptic pools');
 
 pool
   .command('deploy')
-  .description('Deploys a new Panoptic pool, and if necessary, a Uniswap V3 pool based on the provided token pair and fee tier.')
+  .description('Deploy a new Panoptic pool, and if necessary, a Uniswap V3 pool based on the provided token pair and fee tier.')
   .requiredOption('--tokenA <address>', 'The contract address of the first token in the pair (e.g., WONE).')
   .requiredOption('--tokenB <address>', 'The contract address of the second token in the pair (e.g., USDC).')
   .requiredOption('--fee <fee>', 'The fee tier for the Uniswap V3 pool, specified in hundredths of a basis point (e.g., 500 for 0.05%).')
   .option('--tick <tick>', '(Optional) The initial tick value for setting the price of the pool. If not provided, a default tick is used that corresponds to a 1:1 price ratio.')
   .action(async (options) => {
     const { tokenA, tokenB, fee, tick } = options;
-
     try {
-      const pools = await poolManager.deploy(tokenA, tokenB, fee, tick);
-      console.log('Uniswap V3 pool:', pools.uniswapV3Pool);
-      console.log('Panoptic pool:', pools.panoptiPool);
+      await poolManager.deploy(tokenA, tokenB, fee, tick);
     } catch (error) {
-      console.error('Error deploying:', error.message);
+      console.error('Error:', error.message);
     }
   });
 
 pool
   .command('get')
-  .description('Retrieves the Panoptic pool associated with the provided token pair and fee tier.')
+  .description('Retrieve the Panoptic pool associated with the provided token pair and fee tier.')
   .requiredOption('--tokenA <address>', 'The contract address of the first token in the pair (e.g., WONE).')
   .requiredOption('--tokenB <address>', 'The contract address of the second token in the pair (e.g., USDC).')
   .requiredOption('--fee <fee>', 'The fee tier for the Uniswap V3 pool, specified in hundredths of a basis point (e.g., 500 for 0.05%).')
   .action(async (options) => {
     const { tokenA, tokenB, fee } = options;
-
     try {
-      const pools = await poolManager.get(tokenA, tokenB, fee);
-      console.log('Uniswap V3 pool:', pools.uniswapV3Pool);
-      console.log('Panoptic pool:', pools.panoptiPool);
+      await poolManager.get(tokenA, tokenB, fee);
     } catch (error) {
-      console.error('Error retrieving:', error.message);
+      console.error('Error:', error.message);
     }
-  })
+  });
 
 // OPTION MANAGEMENT
 const option = program.command('option').description('Manage options');

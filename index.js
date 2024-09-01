@@ -9,7 +9,7 @@ program
   .name('pcli')
   .description('CLI to interact with Panoptic Protocol');
   
-// key management
+// KEY MANAGEMENT
 const key = program.command('key').description('Manage private keys');
 
 key
@@ -27,10 +27,28 @@ key
   .description('Delete the stored private key')
   .action(keyManager.deleteKey);
 
-// pool management
+// POOL MANAGEMENT
 const pool = program.command('pool').description('Manage Uniswap v3 pools');
 
-// option management
+pool
+  .command('deploy')
+  .description('Deploys a new Panoptic pool, and if necessary, a Uniswap V3 pool based on the provided token pair and fee tier.')
+  .requiredOption('--tokenA <address>', 'The contract address of the first token in the pair (e.g., WONE).')
+  .requiredOption('--tokenB <address>', 'The contract address of the second token in the pair (e.g., USDC).')
+  .requiredOption('--fee <fee>', 'The fee tier for the Uniswap V3 pool, specified in hundredths of a basis point (e.g., 500 for 0.05%).')
+  .option('--tick <tick>', '(Optional) The initial tick value for setting the price of the pool. If not provided, a default tick is used that corresponds to a 1:1 price ratio.')
+  .action(async (options) => {
+    const { tokenA, tokenB, fee, tick } = options;
+
+    try {
+      const pools = await deploy(tokenA, tokenB, fee, tick);
+      console.log('Pools deployed:', pools);
+    } catch (error) {
+      console.error('Error deploying pools:', error.message);
+    }
+  });
+
+// OPTION MANAGEMENT
 const option = program.command('option').description('Manage options');
 
 

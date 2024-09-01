@@ -41,12 +41,31 @@ pool
     const { tokenA, tokenB, fee, tick } = options;
 
     try {
-      const pools = await deploy(tokenA, tokenB, fee, tick);
-      console.log('Pools deployed:', pools);
+      const pools = await poolManager.deploy(tokenA, tokenB, fee, tick);
+      console.log('Uniswap V3 pool:', pools.uniswapV3Pool);
+      console.log('Panoptic pool:', pools.panoptiPool);
     } catch (error) {
-      console.error('Error deploying pools:', error.message);
+      console.error('Error deploying:', error.message);
     }
   });
+
+pool
+  .command('get')
+  .description('Retrieves the Panoptic pool associated with the provided token pair and fee tier.')
+  .requiredOption('--tokenA <address>', 'The contract address of the first token in the pair (e.g., WONE).')
+  .requiredOption('--tokenB <address>', 'The contract address of the second token in the pair (e.g., USDC).')
+  .requiredOption('--fee <fee>', 'The fee tier for the Uniswap V3 pool, specified in hundredths of a basis point (e.g., 500 for 0.05%).')
+  .action(async (options) => {
+    const { tokenA, tokenB, fee } = options;
+
+    try {
+      const pools = await poolManager.get(tokenA, tokenB, fee);
+      console.log('Uniswap V3 pool:', pools.uniswapV3Pool);
+      console.log('Panoptic pool:', pools.panoptiPool);
+    } catch (error) {
+      console.error('Error retrieving:', error.message);
+    }
+  })
 
 // OPTION MANAGEMENT
 const option = program.command('option').description('Manage options');
